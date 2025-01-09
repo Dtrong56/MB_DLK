@@ -1,12 +1,15 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../System/variable.dart';
 
 class LoginController {
   Future<Map<String, dynamic>> login(String username, String password) async {
         
-    final url = Uri.parse('http://192.168.1.45:7777/login');
+    final url = Uri.parse('$apiUrl/login');
     try {
+      print('Sending request to $url with username: $username and password: $password');
+
       final response = await http.post(
         url,
         headers: {
@@ -18,16 +21,22 @@ class LoginController {
         }),  // Gửi dữ liệu dưới dạng JSON
       );
 
+      print('Received response with status: ${response.statusCode}');
+
       if (response.statusCode == 200) {
         // Đăng nhập thành công
         final data = json.decode(response.body);
         final token = data['token'];
+
+        print('Login successful, token: $token');
 
         // Giải mã JWT để lấy userID
         final payload = json.decode(
           utf8.decode(base64Url.decode(base64Url.normalize(token.split('.')[1]))),
         );
         final userID = payload['sub']['userID'];
+
+        print('Decoded JWT payload: $payload');
 
         // Lưu trữ userID và token vào SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -42,6 +51,7 @@ class LoginController {
       } else if (response.statusCode == 404) {
         // Thông tin đăng nhập không đúng
         final data = json.decode(response.body);
+        print('Login failed, reason: ${data['msg']}');
         return {'success': false, 'msg': data['msg']};
       } else {
         // Xử lý lỗi khác
@@ -72,3 +82,4 @@ class LoginController {
     return token;
   }
 }
+

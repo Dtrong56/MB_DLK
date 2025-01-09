@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../repo/signup_controller.dart';
 import '../models/user.dart'; // Import model User từ file user.dart
+import '../screens/login_page.dart';
 
 class SignupForm extends StatefulWidget {
   const SignupForm({super.key});
@@ -21,18 +22,33 @@ class _SignupState extends State<SignupForm> {
   String _username = '';
   String _password = '';
 
+  String? _validateName(String? value) {
+    final validCharacters = RegExp(r'^[a-zA-Z]+$');
+    if (value == null || !validCharacters.hasMatch(value)) {
+      return 'Họ và tên không được chứa ký tự đặc biệt.';
+    }
+    return null;
+  }
+
+  String? _validatePhoneNumber(String? value) {
+    final validCharacters = RegExp(r'^[0-9]+$');
+    if (value == null || !validCharacters.hasMatch(value) || value.length != 10) {
+      return 'Số điện thoại không được chứa ký tự đặc biệt và phải đúng 10 ký tự.';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || !value.endsWith('@gmail.com')) {
+      return 'Email phải có đuôi @gmail.com.';
+    }
+    return null;
+  }
+
   void _register() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
-      // Log các giá trị đầu vào
-      print('Họ: $_ho');
-      print('Tên: $_ten');
-      print('Số điện thoại: $_sdt');
-      print('Email: $_email');
-      print('Username: $_username');
-      print('Password: $_password');
-
+      
       User newUser = User(
         id: 0,
         username: _username,
@@ -50,7 +66,12 @@ class _SignupState extends State<SignupForm> {
             content: Text('Đăng ký thành công!'),
           ),
         );
-        Navigator.pushReplacementNamed(context, '/login'); // Chuyển đến LoginPage
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+          (Route<dynamic> route) => false, // Điều này sẽ loại bỏ tất cả các trang trước đó
+        );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -69,67 +90,71 @@ class _SignupState extends State<SignupForm> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          // Cupertino text field cho trường họ
-          CupertinoTextField(
-            placeholder: 'Họ: ',
-            style: TextStyle(fontFamily: 'NotoSans'),
-            onSubmitted: (value) {
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Họ',
+            ),
+            onChanged: (value) {
               setState(() {
                 _ho = value;
               });
             },
+            validator: _validateName,
           ),
           SizedBox(height: 20),
-          // Cupertino text field cho trường tên
-          CupertinoTextField(
-            placeholder: 'Tên: ',
-            style: TextStyle(fontFamily: 'NotoSans'),
-            onSubmitted: (value) {
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Tên',
+            ),
+            onChanged: (value) {
               setState(() {
                 _ten = value;
               });
             },
+            validator: _validateName,
           ),
           SizedBox(height: 20),
-          // Cupertino text field cho trường sđt
-          CupertinoTextField(
-            placeholder: 'Số điện thoại: ',
-            style: TextStyle(fontFamily: 'NotoSans'),
-            onSubmitted: (value) {
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Số điện thoại',
+            ),
+            onChanged: (value) {
               setState(() {
                 _sdt = value;
               });
             },
+            validator: _validatePhoneNumber,
           ),
           SizedBox(height: 20),
-          // Cupertino text field cho trường email
-          CupertinoTextField(
-            placeholder: 'Email: ',
-            style: TextStyle(fontFamily: 'NotoSans'),
-            onSubmitted: (value) {
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Email',
+            ),
+            onChanged: (value) {
               setState(() {
                 _email = value;
               });
             },
+            validator: _validateEmail,
           ),
           SizedBox(height: 20),
-          // Cupertino text field cho trường username
-          CupertinoTextField(
-            placeholder: 'Username: ',
-            style: TextStyle(fontFamily: 'NotoSans'),
-            onSubmitted: (value) {
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Username',
+            ),
+            onChanged: (value) {
               setState(() {
                 _username = value;
               });
             },
           ),
           SizedBox(height: 20),
-          // Cupertino text field cho trường password
-          CupertinoTextField(
-            placeholder: 'Password: ',
-            style: TextStyle(fontFamily: 'NotoSans'),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Password',
+            ),
             obscureText: true,
-            onSubmitted: (value) {
+            onChanged: (value) {
               setState(() {
                 _password = value;
               });
@@ -145,3 +170,4 @@ class _SignupState extends State<SignupForm> {
     );
   }
 }
+

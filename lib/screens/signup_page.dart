@@ -33,7 +33,7 @@ class _MyAppBar extends StatelessWidget {
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
           Navigator.pushReplacement(
-            context, 
+            context,
             MaterialPageRoute(builder: (context) => LoginPage()),  
           );
         },
@@ -44,5 +44,3 @@ class _MyAppBar extends StatelessWidget {
     );
   }
 }
-
-
