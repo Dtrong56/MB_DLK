@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../repo/user_controller.dart';
-import 'user_info_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../components/booking_form.dart'; // Import BookingForm
 
 class HomePage extends StatefulWidget {
   @override
@@ -17,6 +15,21 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  String _getAppBarTitle() {
+    switch (_selectedIndex) {
+      case 0:
+        return 'Form 1';
+      case 1:
+        return 'Form 2';
+      case 2:
+        return '';
+      case 3:
+        return 'Form 4';
+      default:
+        return 'Form 1';
+    }
+  }
+
   Widget _buildContent() {
     switch (_selectedIndex) {
       case 0:
@@ -24,30 +37,11 @@ class _HomePageState extends State<HomePage> {
       case 1:
         return Text('Form 2');
       case 2:
-        return Text('Form 3');
+        return BookingForm(); // Hiển thị BookingForm khi chọn Đặt hẹn
+      case 3:
+        return Text('Form 4');
       default:
         return Text('Form 1');
-    }
-  }
-
-  void _navigateToPage(BuildContext context, Widget page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => page),
-    );
-  }
-
-  void _navigateToUserInfo(BuildContext context) async {
-    try {
-      final userController = UserController();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final userid = prefs.getInt('userID');
-      final userData = await userController.getUser(userid!); // Thay số 1 bằng ID người dùng thực tế
-      _navigateToPage(context, UserInfoPage(userData: userData));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load user data: $e')),
-      );
     }
   }
 
@@ -55,13 +49,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dynamic Content Screen'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () => _navigateToUserInfo(context),
-          ),
-        ],
+        backgroundColor: Colors.blueAccent,
+        title: Text(_getAppBarTitle()), // Cập nhật tiêu đề AppBar dựa trên nhãn được chọn
       ),
       body: Column(
         children: [
@@ -69,6 +58,10 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white, // Đặt màu nền cụ thể cho BottomNavigationBar
+        elevation: 5, // Thêm độ nổi để BottomNavigationBar không bị trong suốt
+        type: BottomNavigationBarType.fixed, // Đặt loại fixed để các mục không bị tràn
+        selectedItemColor: Colors.blueAccent, // Đặt màu cho mục đã chọn
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -79,8 +72,12 @@ class _HomePageState extends State<HomePage> {
             label: 'Form 2',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.looks_3),
-            label: 'Form 3',
+            icon: Icon(Icons.calendar_today),
+            label: 'Đặt lịch khám',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.looks_4),
+            label: 'Form 4',
           ),
         ],
         currentIndex: _selectedIndex,

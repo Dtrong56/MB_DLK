@@ -67,11 +67,10 @@ class _SignupState extends State<SignupForm> {
           ),
         );
 
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-          (Route<dynamic> route) => false, // Điều này sẽ loại bỏ tất cả các trang trước đó
-        );
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),  
+          );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
