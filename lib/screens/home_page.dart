@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../components/booking_form.dart'; // Import BookingForm
+import '../components/appointments_form.dart'; // Import ListViewForm
+import '../screens/user_info_page.dart'; // Import UserInfoPage
+import '../repo/user_controller.dart'; // Import UserController
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,9 +26,9 @@ class _HomePageState extends State<HomePage> {
       case 1:
         return 'Form 2';
       case 2:
-        return '';
+        return 'Đặt lịch khám';
       case 3:
-        return 'Form 4';
+        return 'Lịch khám';
       default:
         return 'Form 1';
     }
@@ -33,15 +37,34 @@ class _HomePageState extends State<HomePage> {
   Widget _buildContent() {
     switch (_selectedIndex) {
       case 0:
-        return Text('Form 1');
+        return Center(child: Text('Form 1'));
       case 1:
-        return Text('Form 2');
+        return Center(child: Text('Form 2'));
       case 2:
         return BookingForm(); // Hiển thị BookingForm khi chọn Đặt hẹn
       case 3:
-        return Text('Form 4');
+        return ListViewForm(); // Hiển thị ListViewForm khi chọn Lịch khám
       default:
-        return Text('Form 1');
+        return Center(child: Text('Form 1'));
+    }
+  }
+
+  void _navigateToUserInfo(BuildContext context) async {
+    try {
+      final userController = UserController();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final userID = prefs.getInt('userID');
+      final userData = await userController.getUser(userID!); // Thay số 1 bằng ID người dùng thực tế
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UserInfoPage(userData: userData),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load user data: $e')),
+      );
     }
   }
 
@@ -51,12 +74,14 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
         title: Text(_getAppBarTitle()), // Cập nhật tiêu đề AppBar dựa trên nhãn được chọn
-      ),
-      body: Column(
-        children: [
-          _buildContent(),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () => _navigateToUserInfo(context),
+          ),
         ],
       ),
+      body: _buildContent(), // Gọi _buildContent trực tiếp mà không cần Expanded
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white, // Đặt màu nền cụ thể cho BottomNavigationBar
         elevation: 5, // Thêm độ nổi để BottomNavigationBar không bị trong suốt
@@ -76,8 +101,8 @@ class _HomePageState extends State<HomePage> {
             label: 'Đặt lịch khám',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.looks_4),
-            label: 'Form 4',
+            icon: Icon(Icons.calendar_month),
+            label: 'Xem lịch khám',
           ),
         ],
         currentIndex: _selectedIndex,

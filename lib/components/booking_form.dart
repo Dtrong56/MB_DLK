@@ -59,25 +59,38 @@ class _BookingFormState extends State<BookingForm> {
 
   void _updateDoctors() {
     List<BacSi> filteredDoctors = _allDoctors;
-    if (_selectedBenhVien != null) {
+    bool hasBenhVienFilter = _selectedBenhVien != null;
+    bool hasKhoaFilter = _selectedKhoa != null;
+
+    if (hasBenhVienFilter) {
       filteredDoctors = filteredDoctors.where((doctor) =>
         _centers.any((center) =>
           center.tenBenhVien == _selectedBenhVien && center.bacSiId == doctor.id
         )
       ).toList();
     }
-    if (_selectedKhoa != null) {
+
+    if (hasKhoaFilter) {
       filteredDoctors = filteredDoctors.where((doctor) =>
         _ctKhoas.any((ctKhoa) =>
           ctKhoa.khoaId == _khoas.firstWhere((khoa) => khoa.tenKhoa == _selectedKhoa).id && ctKhoa.bacsiId == doctor.id
         )
       ).toList();
     }
+
+    if ((hasBenhVienFilter || hasKhoaFilter) && filteredDoctors.isEmpty) {
+      filteredDoctors = [];
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Không tìm thấy bác sĩ phù hợp với lựa chọn!'))
+      );
+    }
+
     setState(() {
       _doctors = filteredDoctors;
-      _selectedBacSi = null; // Reset selected doctor
+      _selectedBacSi = null; // Đặt lại bác sĩ đã chọn
     });
   }
+
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -155,6 +168,7 @@ class _BookingFormState extends State<BookingForm> {
 }
 
 
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -225,18 +239,16 @@ class _BookingFormState extends State<BookingForm> {
                             child: Text(value.ten),
                           );
                         }).toList()
-                      : _allDoctors.map((BacSi value) {
-                          return DropdownMenuItem<String>(
-                            value: value.ten,
-                            child: Text(value.ten),
-                          );
-                        }).toList(), // Hiển thị danh sách bác sĩ đầy đủ nếu _doctors rỗng
+                      : [], // Hiển thị danh sách bác sĩ rỗng nếu _doctors rỗng
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedBacSi = newValue;
                     });
                   },
                   validator: (value) {
+                    if (_doctors.isEmpty) {
+                      return 'Không có bác sĩ phù hợp yêu cầu!';
+                    }
                     if (value == null || value.isEmpty) {
                       return 'Vui lòng chọn Bác sĩ';
                     }
@@ -300,11 +312,12 @@ class _BookingFormState extends State<BookingForm> {
                   },
                   child: Text('Đặt Lịch Khám'),
                 ),
-              ], 
-            ), 
-          ), 
-        ], 
-      ), 
+              ],
+            ),
+          ),
+        ],
+      ),
     );
-  } 
+  }
+
 }
