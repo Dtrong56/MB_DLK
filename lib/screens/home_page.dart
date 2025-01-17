@@ -5,6 +5,7 @@ import '../screens/user_info_page.dart'; // Import UserInfoPage
 import '../repo/user_controller.dart'; // Import UserController
 import 'package:shared_preferences/shared_preferences.dart';
 import '../components/doctor_form.dart';
+import '../components/center_form.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -25,7 +26,7 @@ class _HomePageState extends State<HomePage> {
       case 0:
         return 'Danh sách bác sĩ';
       case 1:
-        return 'Form 2';
+        return 'Danh sách bệnh viện';
       case 2:
         return 'Đặt lịch khám';
       case 3:
@@ -40,7 +41,7 @@ class _HomePageState extends State<HomePage> {
       case 0:
         return ListDoctorView();
       case 1:
-        return Center(child: Text('Form 2'));
+        return ListHospitalView();
       case 2:
         return BookingForm(); // Hiển thị BookingForm khi chọn Đặt hẹn
       case 3:
@@ -94,8 +95,8 @@ class _HomePageState extends State<HomePage> {
             label: 'Xem bác sĩ',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.looks_two),
-            label: 'Form 2',
+            icon: Icon(Icons.local_hospital),
+            label: 'Danh sách bệnh viện',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
