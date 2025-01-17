@@ -4,6 +4,7 @@ import '../components/appointments_form.dart'; // Import ListViewForm
 import '../screens/user_info_page.dart'; // Import UserInfoPage
 import '../repo/user_controller.dart'; // Import UserController
 import 'package:shared_preferences/shared_preferences.dart';
+import '../components/doctor_form.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   String _getAppBarTitle() {
     switch (_selectedIndex) {
       case 0:
-        return 'Form 1';
+        return 'Danh sách bác sĩ';
       case 1:
         return 'Form 2';
       case 2:
@@ -37,7 +38,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildContent() {
     switch (_selectedIndex) {
       case 0:
-        return Center(child: Text('Form 1'));
+        return ListDoctorView();
       case 1:
         return Center(child: Text('Form 2'));
       case 2:
@@ -89,8 +90,8 @@ class _HomePageState extends State<HomePage> {
         selectedItemColor: Colors.blueAccent, // Đặt màu cho mục đã chọn
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Form 1',
+            icon: Icon(Icons.medical_services),
+            label: 'Xem bác sĩ',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.looks_two),
